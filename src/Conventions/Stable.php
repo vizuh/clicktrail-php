@@ -59,6 +59,19 @@ final class Stable
     public const EVENT_SALE_COMPLETED = 'sale.completed';
     public const EVENT_SALE_REFUNDED = 'sale.refunded';
 
+
+    // --- channels & labels (fixture-driven subset; see FIXTURE-PARITY-LEDGER) ---
+
+    public const CHANNEL_PAID_SEARCH = 'paid_search';
+    public const CHANNEL_PAID_OTHER = 'paid_other';
+    public const CHANNEL_ORGANIC_SEARCH = 'organic_search';
+    public const CHANNEL_ORGANIC_SOCIAL = 'organic_social';
+    public const CHANNEL_EMAIL = 'email';
+    public const CHANNEL_UNKNOWN = 'unknown';
+
+    /** sc_click_id is an alias of sccid (plugin contract). */
+    public const CLICK_ID_ALIASES = ['sc_click_id' => 'sccid'];
+
     private function __construct()
     {
     }
