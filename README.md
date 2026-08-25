@@ -1,72 +1,93 @@
-# clicktrail-php
+[English](README.md) | [Português](README.pt-BR.md) | [Deutsch](README.de.md) | [中文](README.zh-CN.md)
 
-Deterministic attribution core + PHP SDK for ClickTrail.
-Packagist: `clicktrail/php-sdk` (repo: `clicktrail-php`).
+<div align="center">
 
-Same architecture and contract as [`clicktrail-js`](https://github.com/vizuh/clicktrail-js):
+**clicktrail/php-sdk**
 
+Deterministic campaign attribution for PHP — the same engine contract behind ClickTrail's WordPress, GTM and CMS integrations.
+
+</div>
+
+[![CI](https://github.com/vizuh/clicktrail-php/actions/workflows/ci.yml/badge.svg)](https://github.com/vizuh/clicktrail-php/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+## Index
+
+- [Why](#why)
+- [Installation](#installation)
+- [Attribution capture](#attribution-capture)
+- [Consent gating](#consent-gating)
+- [Delivery](#delivery)
+- [Fixture parity](#fixture-parity)
+- [Testing](#testing)
+- [License](#license)
+
+## Why
+
+Most tracking packages store what a page showed. ClickTrail proves which campaign created the lead or sale: deterministic first-touch / last-touch merge laws, validated field-by-field against the same golden fixtures that govern our WordPress plugin and GTM templates.
+
+## Installation
+
+```bash
+composer require clicktrail/php-sdk
 ```
-conventions (meaning) -> core engine (pure functions) -> adapters (frameworks & CMS marketplaces)
-```
 
-Design rules inherited from the JS engine:
-
-1. The core is **deterministic**: same inputs -> same output. Time, IDs,
-   storage, consent and network are injected by callers, never requested.
-2. Every payload carries `schema_version` and `classifier_version`
-   (currently `1.2.0`, byte-equal to the JS engine).
-3. Classifier behavior changes are major semver, by definition.
-   Golden-fixture parity against `clicktrail-js` is the release gate
-   (`packages/clicktrail/fixtures/` replay, MATCH/DIFF ledger).
-
-## What ships here (layer 1 - framework foundation)
-
-- Attribution conventions (`ClickTrail\Conventions\Stable`)
-- Deterministic touch parsing + first/last-touch merge laws (`Core`)
-- Canonical payload serialization with version stamps
-- Ingestion client **contracts** (interface + exception taxonomy);
-  concrete transport is `# DEFERRED` until the parity gate passes
-
-Layer-2 consumers (marketplace plugins):
-
-| Adapter | Platform | Distribution |
-|---|---|---|
-| clicktrail-october | October CMS 3 | official marketplace |
-| clicktrail-craft | Craft CMS 5 | Plugin Store |
-| clicktrail-shopware | Shopware 6.6 | Shopware Store |
-| clicktrail-drupal | Drupal 11 | drupal.org |
-| clicktrail-filament | Filament 3 | community directory |
-
-Framework packages queued: `clicktrail/psr-middleware`, `clicktrail/laravel`,
-`clicktrail/symfony-bundle`.
-
-## Quick example
+## Attribution capture
 
 ```php
-use ClickTrail\Core\AttributionInput;
-use ClickTrail\Core\TouchParser;
-use ClickTrail\Core\TouchMerger;
-use ClickTrail\Core\StoredState;
+use ClickTrail\Core\{AttributionInput, StoredState, TouchMerger};
 
-$input = new AttributionInput(
-    query: $_GET,
-    host: 'example.com',
-    landingPage: 'https://example.com/promo',
-    referrer: $_SERVER['HTTP_REFERER'] ?? null,
-    touchTimestamp: '2026-08-24T10:00:00.000Z', // caller owns the clock
+// A paid-search landing...
+$merged = TouchMerger::observe(
+    StoredState::fromJson($session['ct'] ?? null),
+    new AttributionInput(
+        query: $_GET,
+        host: 'example.com',
+        landingPage: 'https://example.com/promo',
+        touchTimestamp: '2026-08-24T10:00:00.000Z',
+    ),
 );
 
-$stored = StoredState::fromJson($session['clicktrail_attribution'] ?? null);
-$merged = TouchParser::hasSignal($input)
-    ? TouchMerger::merge($stored, TouchParser::parse($input))
-    : $stored;
-
-$session['clicktrail_attribution'] = $merged->toJson();
+$session['ct'] = $merged->toJson();
+// first->source === 'google', first->clickIds['gclid'] set,
+// and this exact result replays identically in WordPress, GTM and Shopware.
 ```
 
-Merge laws: first touch is written once and never overwritten within a major;
-last touch follows the newest non-direct signal; click IDs guard first-touch.
+A direct visit afterwards changes nothing — first touch stays, stored last touch persists. That is the merge law, tested, not promised.
+
+## Consent gating
+
+```php
+use ClickTrail\Consent\{ConsentBehavior, ConsentSnapshot};
+
+if (! ConsentBehavior::can($snapshot, 'ad_user_data')) {
+    // enhanced conversion suppressed; reason recorded:
+    // "adUserData was unknown at lead capture (source: cookieyes)"
+}
+```
+
+Unknown consent is denied by default. Snapshots travel with the lead, so months later the conversion worker knows exactly which permissions existed at capture.
+
+## Delivery
+
+```php
+$client->track(new Sale(eventId: 'order-8241-paid', orderId: '8241', value: 199.0, currency: 'EUR'));
+$client->flush(); // batched POST, idempotency keys, backoff retries
+```
+
+Failed batches are captured by your adapter's persistence layer via `pending()` / `restore()` and replayed after diagnosis.
+
+## Fixture parity
+
+`bin/replay-fixtures.php` replays the clicktrail-js golden fixtures: currently **12/12 fixtures, 57/57 fields MATCH**. Ledger: [docs/FIXTURE-PARITY-LEDGER.md](docs/FIXTURE-PARITY-LEDGER.md). Classifier changes are MAJOR releases, by definition.
+
+## Testing
+
+```bash
+vendor/bin/phpunit --testdox          # full suite
+php bin/replay-fixtures.php <dir>     # parity ledger
+```
 
 ## License
 
-MIT - see [LICENSE](LICENSE).
+MIT.
