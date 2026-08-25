@@ -104,6 +104,33 @@ final class BatchClient
     }
 
     /**
+     * Payloads queued but not yet delivered - lets persistence layers
+     * (e.g. Laravel failed-job storage) capture them verbatim.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function pending(): array
+    {
+        return $this->queue;
+    }
+
+    /**
+     * Re-queue payloads previously captured via pending() (job retry /
+     * failed-event replay). No revalidation by design: payloads came from
+     * this client and are already envelope-shaped.
+     *
+     * @param array<int, array<string, mixed>> $payloads
+     */
+    public function restore(array $payloads): void
+    {
+        foreach ($payloads as $payload) {
+            if (is_array($payload)) {
+                $this->queue[] = $payload;
+            }
+        }
+    }
+
+    /**
      * Send all queued events in batches. Returns number of batches delivered.
      */
     public function flush(): int

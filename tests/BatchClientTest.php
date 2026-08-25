@@ -110,4 +110,20 @@ final class BatchClientTest extends TestCase
         $this->expectException(RetryableException::class);
         $c->flush();
     }
+
+    public function testPendingAndRestoreRoundTrip(): void
+    {
+        $c = $this->client(50);
+        $c->track(new Sale(eventId: 'e9', orderId: '77', value: 1.0));
+        $pending = $c->pending();
+        self::assertCount(1, $pending);
+
+        $fresh = $this->client(50);
+        $fresh->restore($pending);
+        self::assertSame($c->pending(), $fresh->pending());
+
+        // restored payload survives a flush unchanged
+        $this->responses = [new Response(500), new Response(200)];
+        self::assertSame(1, $fresh->flush());
+    }
 }
