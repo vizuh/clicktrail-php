@@ -22,7 +22,7 @@ final class Lead extends AbstractEvent
         ?\DateTimeImmutable $occurredAt = null,
         array $extra = [],
     ) {
-        parent::__construct(Stable::EVENT_LEAD_SUBMITTED, $eventId, $visitorId, $occurredAt, $extra);
+        parent::__construct(Stable::EVENT_LEAD_CREATED, $eventId, $visitorId, $occurredAt, $extra);
     }
 
     public function toArray(): array

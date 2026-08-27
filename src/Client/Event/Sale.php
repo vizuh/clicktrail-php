@@ -17,7 +17,7 @@ final class Sale extends AbstractEvent
         ?\DateTimeImmutable $occurredAt = null,
         array $extra = [],
     ) {
-        parent::__construct(Stable::EVENT_SALE_COMPLETED, $eventId, $visitorId, $occurredAt, $extra);
+        parent::__construct(Stable::EVENT_SALE, $eventId, $visitorId, $occurredAt, $extra);
     }
 
     public function toArray(): array

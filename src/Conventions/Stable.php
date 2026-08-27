@@ -53,12 +53,47 @@ final class Stable
     // --- events --------------------------------------------------------------
 
     public const EVENT_PAGE_VIEW = 'page_view';
+    public const EVENT_FORM_STARTED = 'form_started';
+    public const EVENT_LEAD_CREATED = 'lead_created';
+    public const EVENT_LEAD_QUALIFIED = 'lead_qualified';
+    public const EVENT_BOOKING_CREATED = 'booking_created';
+    public const EVENT_BOOKING_COMPLETED = 'booking_completed';
+    public const EVENT_SALE = 'sale';
+    public const EVENT_REFUND = 'refund';
+    public const EVENT_CONSENT_UPDATED = 'consent_updated';
+
+    /** @deprecated Use EVENT_LEAD_CREATED. */
     public const EVENT_LEAD_SUBMITTED = 'lead.submitted';
+    /** @deprecated Use EVENT_BOOKING_CREATED. */
     public const EVENT_APPOINTMENT_BOOKED = 'appointment.booked';
+    /** @deprecated Use EVENT_BOOKING_COMPLETED. */
     public const EVENT_APPOINTMENT_ATTENDED = 'appointment.attended';
+    /** @deprecated Use EVENT_SALE. */
     public const EVENT_SALE_COMPLETED = 'sale.completed';
+    /** @deprecated Use EVENT_REFUND. */
     public const EVENT_SALE_REFUNDED = 'sale.refunded';
 
+    /** Normalize pre-contract names while preserving unknown host events. */
+    public static function canonicalEventName(string $eventName): string
+    {
+        return match ($eventName) {
+            'lead', 'form.submitted', 'lead.submitted', 'lead_submitted',
+            'form_submission', 'lead.attribution_attached' => self::EVENT_LEAD_CREATED,
+            'form.started' => self::EVENT_FORM_STARTED,
+            'lead.qualified' => self::EVENT_LEAD_QUALIFIED,
+            'booking', 'appointment.booked', 'appointment.requested' => self::EVENT_BOOKING_CREATED,
+            'appointment.attended', 'appointment.completed' => self::EVENT_BOOKING_COMPLETED,
+            'sale.completed', 'sale.recorded', 'purchase', 'revenue.recurring',
+            'offline_conversion.sent' => self::EVENT_SALE,
+            'sale.refunded', 'refund.issued' => self::EVENT_REFUND,
+            'consent.granted', 'consent.withdrawn',
+            'consent.policy_updated' => self::EVENT_CONSENT_UPDATED,
+            'lead.stage_updated' => 'lead_updated',
+            'lead.merged' => 'lead_merged',
+            'visitor.anonymized' => 'visitor_anonymized',
+            default => $eventName,
+        };
+    }
 
     // --- channels & labels (fixture-driven subset; see FIXTURE-PARITY-LEDGER) ---
 

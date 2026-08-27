@@ -19,7 +19,7 @@ abstract class AbstractEvent implements EventInterface
 
     public function name(): string
     {
-        return $this->name;
+        return Stable::canonicalEventName($this->name);
     }
 
     public function eventId(): ?string
@@ -35,7 +35,7 @@ abstract class AbstractEvent implements EventInterface
     public function toArray(): array
     {
         $payload = [
-            'event' => ['name' => $this->name],
+            'event' => ['name' => $this->name()],
             'schema_version' => Stable::SCHEMA_VERSION,
             'source' => Stable::SOURCE_PHP,
         ];

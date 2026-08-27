@@ -8,6 +8,8 @@ use ClickTrail\Client\BatchClient;
 use ClickTrail\Client\Event\Sale;
 use ClickTrail\Client\Exception\PermanentException;
 use ClickTrail\Client\Exception\RetryableException;
+use ClickTrail\Core\PayloadSerializer;
+use ClickTrail\Core\StoredState;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
@@ -56,6 +58,17 @@ final class BatchClientTest extends TestCase
         );
     }
 
+    public function testLegacyNamesNormalizeAtSharedSerializer(): void
+    {
+        $payload = (new PayloadSerializer())->serialize(
+            'site-1',
+            ['name' => 'appointment.attended'],
+            StoredState::empty(),
+        );
+
+        self::assertSame('booking_completed', $payload['event']['name']);
+    }
+
     public function testBatchSplitsAndStampsEnvelopes(): void
     {
         $c = $this->client(2);
@@ -73,7 +86,7 @@ final class BatchClientTest extends TestCase
         self::assertSame('site-1', $first[0]['site_id']);
         self::assertSame('order-1-paid', $first[0]['idempotency_key']);
         self::assertSame('1.2.0', $first[0]['schema_version']);
-        self::assertSame('sale.completed', $first[0]['event']['name']);
+        self::assertSame('sale', $first[0]['event']['name']);
         self::assertSame(11.0, (float) $first[0]['event']['value']); // JSON round-trip may yield int
         self::assertSame('EUR', $first[0]['event']['currency']);
         self::assertSame('site-1', $this->requests[0]['headers']['X-ClickTrail-Site-Id'] ?? null);

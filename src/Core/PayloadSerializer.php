@@ -24,6 +24,9 @@ final class PayloadSerializer
         array $extra = [],
         string $source = Stable::SOURCE_PHP,
     ): array {
+        if (isset($event['name']) && is_string($event['name'])) {
+            $event['name'] = Stable::canonicalEventName($event['name']);
+        }
         $payload = [
             'schema_version' => Stable::SCHEMA_VERSION,
             'source' => $source,

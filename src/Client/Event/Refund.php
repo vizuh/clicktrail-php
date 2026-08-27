@@ -17,7 +17,7 @@ final class Refund extends AbstractEvent
         ?\DateTimeImmutable $occurredAt = null,
         array $extra = [],
     ) {
-        parent::__construct(Stable::EVENT_SALE_REFUNDED, $eventId, $visitorId, $occurredAt, $extra);
+        parent::__construct(Stable::EVENT_REFUND, $eventId, $visitorId, $occurredAt, $extra);
     }
 
     public function toArray(): array
