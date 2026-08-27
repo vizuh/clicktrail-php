@@ -1,6 +1,6 @@
 {
     "name": "clicktrail/php-sdk",
-    "description": "ClickTrail deterministic attribution core and PHP SDK - parse, classify and merge first/last-touch attribution; event ingestion contracts.",
+    "description": "Deterministic acquisition-context core for PHP: parse observed inputs, apply first/last-touch rules, and build canonical events.",
     "type": "library",
     "license": "MIT",
     "require": {

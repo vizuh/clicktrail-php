@@ -4,7 +4,9 @@
 
 **clicktrail/php-sdk**
 
-Deterministische Kampagnen-Attribution für PHP — derselbe Engine-Vertrag hinter ClickTrails WordPress-, GTM- und CMS-Integrationen.
+Deterministische Engine für Akquisitionskontext in PHP. Sie verarbeitet
+beobachtete Request-Daten, wendet First-Touch- und Last-Touch-Regeln an und
+erstellt kanonische Events.
 
 </div>
 
@@ -24,7 +26,10 @@ Deterministische Kampagnen-Attribution für PHP — derselbe Engine-Vertrag hint
 
 ## Warum
 
-Die meisten Tracking-Pakete speichern, was eine Seite angezeigt hat. ClickTrail beweist, welche Kampagne den Lead oder Verkauf erzeugt hat: deterministische First-Touch-/Last-Touch-Merge-Regeln, Feld für Feld gegen dieselben Golden Fixtures validiert, die auch unser WordPress-Plugin und unsere GTM-Templates steuern.
+ClickTrail bewahrt den in einem Request beobachteten Kampagnenkontext. Es
+beweist nicht, welche Kampagne einen Lead oder Verkauf verursacht hat. Dieses
+SDK bündelt die deterministischen First-Touch- und Last-Touch-Regeln und prüft
+sie mit denselben Golden Fixtures wie die WordPress- und GTM-Integrationen.
 
 ## Installation
 
@@ -53,7 +58,7 @@ $session['ct'] = $merged->toJson();
 // und genau dieses Ergebnis läuft in WordPress, GTM und Shopware identisch nach.
 ```
 
-Ein direkter Besuch danach ändert nichts — der First Touch bleibt, der gespeicherte Last Touch besteht fort. Das ist die Merge-Regel: getestet, nicht versprochen.
+Ein direkter Besuch danach ändert nichts; der First Touch bleibt, der gespeicherte Last Touch besteht fort. Das ist die Merge-Regel: getestet, nicht versprochen.
 
 ## Consent-Gating
 
