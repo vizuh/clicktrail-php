@@ -24,7 +24,7 @@ Deterministic campaign attribution for PHP — the same engine contract behind C
 
 ## Why
 
-Most tracking packages store what a page showed. ClickTrail proves which campaign created the lead or sale: deterministic first-touch / last-touch merge laws, validated field-by-field against the same golden fixtures that govern our WordPress plugin and GTM templates.
+ClickTrail is the open-source attribution handoff layer that keeps observed acquisition context attached to conversion records inside the stack you own. This PHP package carries the same deterministic first-touch / last-touch contract into PHP applications, validated field-by-field against the golden fixtures shared with the WordPress plugin and GTM templates.
 
 ## Installation
 

@@ -24,7 +24,7 @@ Deterministische Kampagnen-Attribution für PHP — derselbe Engine-Vertrag hint
 
 ## Warum
 
-Die meisten Tracking-Pakete speichern, was eine Seite angezeigt hat. ClickTrail beweist, welche Kampagne den Lead oder Verkauf erzeugt hat: deterministische First-Touch-/Last-Touch-Merge-Regeln, Feld für Feld gegen dieselben Golden Fixtures validiert, die auch unser WordPress-Plugin und unsere GTM-Templates steuern.
+ClickTrail ist die Open-Source-Übergabeschicht für Attribution, die beobachteten Akquisekontext an Conversion-Datensätzen innerhalb Ihres eigenen Stacks hält. Dieses PHP-Paket bringt denselben deterministischen First-Touch-/Last-Touch-Vertrag in PHP-Anwendungen und validiert ihn Feld für Feld gegen die Golden Fixtures des WordPress-Plugins und der GTM-Templates.
 
 ## Installation
 

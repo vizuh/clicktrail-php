@@ -24,7 +24,7 @@ Atribuição determinística de campanhas para PHP — o mesmo contrato de engin
 
 ## Por quê
 
-A maioria dos pacotes de rastreamento guarda o que a página mostrou. A ClickTrail prova qual campanha criou o lead ou a venda: leis determinísticas de mesclagem first-touch / last-touch, validadas campo a campo contra os mesmos golden fixtures que governam nosso plugin WordPress e nossos templates GTM.
+ClickTrail é a camada open source de handoff de atribuição que mantém o contexto de aquisição observado ligado aos registros de conversão dentro da stack que você controla. Este pacote PHP leva o mesmo contrato determinístico de first-touch / last-touch para aplicações PHP, validado campo a campo contra os golden fixtures compartilhados com o plugin WordPress e os templates GTM.
 
 ## Instalação
 
