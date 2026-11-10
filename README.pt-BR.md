@@ -77,6 +77,8 @@ $client->flush(); // POST em lote, chaves de idempotência, retries com backoff
 
 Lotes que falham são capturados pela camada de persistência do seu adapter via `pending()` / `restore()` e reenviados após o diagnóstico.
 
+Quando um retry ou um webhook reenviado precisa ser deduplicado entre runtimes, derive o ID do evento a partir de uma chave do site: `Stable::deriveStableEventId('site-1', 'order:8241:paid')` retorna o mesmo ID `evt_s-…` que `deriveStableEventId` em `@vizuh/clicktrail-core` (vetores compartilhados em `tests/fixtures/stable-event-id-v1.json`). Passe-o como `eventId`; eventos sem ID continuam recebendo uma chave de idempotência aleatória.
+
 ## Paridade de fixtures
 
 O `bin/replay-fixtures.php` repassa os golden fixtures do clicktrail-js: atualmente **12/12 fixtures, 57/57 campos MATCH**. Ledger: [docs/FIXTURE-PARITY-LEDGER.md](docs/FIXTURE-PARITY-LEDGER.md). Mudanças no classificador são releases MAJOR, por definição.

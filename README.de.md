@@ -77,6 +77,8 @@ $client->flush(); // gebatchter POST, Idempotency-Keys, Retries mit Backoff
 
 Fehlgeschlagene Batches werden von der Persistenzschicht Ihres Adapters über `pending()` / `restore()` aufgefangen und nach der Diagnose erneut zugestellt.
 
+Wenn Retries oder erneut zugestellte Webhooks laufzeitübergreifend dedupliziert werden müssen, leiten Sie die Event-ID aus einem Site-bezogenen Schlüssel ab: `Stable::deriveStableEventId('site-1', 'order:8241:paid')` liefert dieselbe `evt_s-…`-ID wie `deriveStableEventId` in `@vizuh/clicktrail-core` (gemeinsame Vektoren in `tests/fixtures/stable-event-id-v1.json`). Übergeben Sie sie als `eventId`; Events ohne ID erhalten weiterhin einen zufälligen Idempotency-Key.
+
 ## Fixture-Parität
 
 `bin/replay-fixtures.php` spielt die Golden Fixtures von clicktrail-js ab: aktuell **12/12 Fixtures, 57/57 Felder MATCH**. Ledger: [docs/FIXTURE-PARITY-LEDGER.md](docs/FIXTURE-PARITY-LEDGER.md). Änderungen am Klassifikator sind per Definition MAJOR-Releases.

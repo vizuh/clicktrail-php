@@ -95,6 +95,26 @@ final class Stable
         };
     }
 
+    /**
+     * Derive a STABLE event id from a site-scoped external key, so replays
+     * (webhook redelivery, Sale/Refund retries) reuse the same id across
+     * runtimes. Mirror of deriveStableEventId in clicktrail-js
+     * packages/core/src/ids.ts (fixture: stable-event-id-v1.json):
+     * 'evt_s-' + hex(first 16 bytes of sha256(utf8(siteId . "\0" . externalKey))).
+     *
+     * Inputs are hashed as raw bytes; pass UTF-8 strings to match JS.
+     *
+     * @throws \InvalidArgumentException when siteId or externalKey is empty
+     */
+    public static function deriveStableEventId(string $siteId, string $externalKey): string
+    {
+        if ($siteId === '' || $externalKey === '') {
+            throw new \InvalidArgumentException('deriveStableEventId requires non-empty siteId and externalKey.');
+        }
+
+        return 'evt_s-' . bin2hex(substr(hash('sha256', $siteId . "\0" . $externalKey, true), 0, 16));
+    }
+
     // --- channels & labels (fixture-driven subset; see FIXTURE-PARITY-LEDGER) ---
 
     public const CHANNEL_PAID_SEARCH = 'paid_search';
