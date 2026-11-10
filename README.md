@@ -77,6 +77,8 @@ $client->flush(); // batched POST, idempotency keys, backoff retries
 
 Failed batches are captured by your adapter's persistence layer via `pending()` / `restore()` and replayed after diagnosis.
 
+When a retry or webhook redelivery must dedupe across runtimes, derive the event id from a site-scoped key instead of inventing one: `Stable::deriveStableEventId('site-1', 'order:8241:paid')` returns the same `evt_s-…` id as `deriveStableEventId` in `@vizuh/clicktrail-core` (shared vectors in `tests/fixtures/stable-event-id-v1.json`). Pass it as the event's `eventId`; events without one still get a random idempotency key.
+
 ## Fixture parity
 
 `bin/replay-fixtures.php` replays the clicktrail-js golden fixtures: currently **12/12 fixtures, 57/57 fields MATCH**. Ledger: [docs/FIXTURE-PARITY-LEDGER.md](docs/FIXTURE-PARITY-LEDGER.md). Classifier changes are MAJOR releases, by definition.

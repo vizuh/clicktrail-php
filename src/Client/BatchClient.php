@@ -22,7 +22,8 @@ use Psr\Log\NullLogger;
  *  - events queue client-side; flush() posts JSON batches to the endpoint
  *    (WordPress contract: POST {endpoint}/wp-json/clicutcl/v2/events/batch);
  *  - idempotency key per event: caller event id or generated random key,
- *    sent as `idempotency_key` inside each envelope;
+ *    sent as `idempotency_key` inside each envelope; for cross-runtime
+ *    dedupe of retries pass Stable::deriveStableEventId() as the event id;
  *  - 429/5xx/network -> exponential backoff retries (jittered), then
  *    RetryableException; other 4xx -> PermanentException immediately;
  *  - no telemetry leaves the process unless flush() is called (queue jobs /

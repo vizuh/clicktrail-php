@@ -77,6 +77,8 @@ $client->flush(); // 批量 POST，幂等键，带退避的重试
 
 失败的批次由适配器的持久层通过 `pending()` / `restore()` 捕获，诊断完成后重新投递。
 
+当重试或 webhook 重复投递需要跨运行时去重时，请基于站点范围的键派生事件 ID：`Stable::deriveStableEventId('site-1', 'order:8241:paid')` 返回与 `@vizuh/clicktrail-core` 中 `deriveStableEventId` 相同的 `evt_s-…` ID（共享向量见 `tests/fixtures/stable-event-id-v1.json`）。将其作为 `eventId` 传入；未提供 ID 的事件仍会获得随机幂等键。
+
 ## Fixture 一致性
 
 `bin/replay-fixtures.php` 会重放 clicktrail-js 的黄金 fixtures：当前为 **12/12 个 fixture，57/57 个字段 MATCH**。一致性账本：[docs/FIXTURE-PARITY-LEDGER.md](docs/FIXTURE-PARITY-LEDGER.md)。分类器变更按定义属于 MAJOR 版本发布。
